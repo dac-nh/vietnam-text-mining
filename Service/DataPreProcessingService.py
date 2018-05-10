@@ -19,7 +19,8 @@ from gensim.models import Word2Vec
 from nltk import ngrams
 
 # remove punctuation
-import Repository.GeneralRepository
+import Repository.GeneralRepository as GeneralRepository
+import Service.WordProcessing as WordProcessing
 
 
 def transform_row(row):
@@ -79,7 +80,7 @@ def generate_word2vec_model(category, from_date, to_date='0'):
     path = "Library/Model/" + category + "/word2vec_model"  # model path
     try:
         # Query data from Neo4j
-        results = Repository.GeneralRepository.get_paper_by_category_and_date(category, from_date, to_date)
+        results = GeneralRepository.get_paper_by_category_and_date(category, from_date, to_date)
 
         train_data = []
         for element in results:
@@ -141,7 +142,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
         print('Processing papers in date ' + current_date)
 
         # save current date into neo4j
-        current_date_node = Repository.GeneralRepository.create_date_node(current_date)
+        current_date_node = GeneralRepository.create_date_node(current_date)
         if current_date_node:
             current_date_node = current_date_node['data']
 
@@ -176,11 +177,11 @@ def data_analyzing(path, category_nodes, last_processed_date):
                         paper_sentences_in_array)  # Json to string use json.loads(paper_sentences)
 
                     # Save to database
-                    result_create_paper_node = Repository.GeneralRepository.create_paper_node(paper_title, paper,
-                                                                                              paper_sentences,
-                                                                                              category_nodes,
-                                                                                              current_category,
-                                                                                              current_date_node)
+                    result_create_paper_node = GeneralRepository.create_paper_node(paper_title, paper,
+                                                                                   paper_sentences,
+                                                                                   category_nodes,
+                                                                                   current_category,
+                                                                                   current_date_node)
                     if not result_create_paper_node['code']:
                         print('[data_analyzing] Failed at create_paper_node\n')
                 except Exception as e:
@@ -201,7 +202,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
 # MAIN
 ##
 
-def run():
+def generate_word_2_vec():
     """
     Pre Processing
     :return: code, pre_processing_time_log
@@ -210,7 +211,7 @@ def run():
     # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     # Get list category in database
-    category_nodes = Repository.GeneralRepository.get_category_in_neo4j()  # list category nodes
+    category_nodes = GeneralRepository.get_category_in_neo4j()  # list category nodes
 
     # read file
     root_folder = glob.glob("preprocessing_data")
@@ -244,7 +245,7 @@ def run():
 
 
 # 2018-04-24: Dac: writing to time_log_pre_processing
-pre_processing_time_log = run()['pre_processing_time_log']
+pre_processing_time_log = generate_word_2_vec()['pre_processing_time_log']
 pre_processing_time_log += WordProcessing.run()['pre_processing_time_log']
 
 f = open("Library/stored/time_log_pre_processing.txt", "a+")
