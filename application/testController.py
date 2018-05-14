@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
@@ -8,12 +8,15 @@ app = Flask(__name__)
 ##
 @app.route('/')
 def index():
-    return 'This is the homepage'
+    return render_template("main.html", title='Vietnamese Text Mining')
 
 
-@app.route('/tuna')
+@app.route('/tuna', methods=['GET', 'POST'])
 def tuna():
-    return '<h2>Tuna is good</h2>'
+    if request.method == 'GET':
+        return 'You are using GET method'
+    else:
+        return 'You are using POST method'
 
 
 @app.route('/profile/<username>')
