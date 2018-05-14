@@ -19,8 +19,8 @@ from gensim.models import Word2Vec
 from nltk import ngrams
 
 # remove punctuation
-import Repository.GeneralRepository as GeneralRepository
-import Service.WordProcessing as WordProcessing
+import application.Repository.GeneralRepository as GeneralRepository
+import application.Service.WordProcessing as WordProcessing
 
 
 def transform_row(row):

@@ -2,7 +2,7 @@ import datetime
 
 from gensim.models import Word2Vec
 
-import Repository.GeneralRepository as GeneralRepository
+import application.Repository.GeneralRepository as GeneralRepository
 
 """
 FUNCTION
