@@ -10,7 +10,10 @@ $(function () {
 
 $(document).ready(function () {
     var categoryTable = $('#categoryTable').DataTable({
-        pageLength: 6
+        pageLength: 6,
+        paging: false,
+        searching: false,
+        ordering: false
     });
 
     $.get(window.location.origin + "/category", function (bean, status) {
