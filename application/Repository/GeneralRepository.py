@@ -189,3 +189,7 @@ def create_date_node(current_date):
         print('[create_date] Failed with error: {0}'.format(e.args[0]))
 
     return result
+
+
+# load category
+category_nodes = get_category_in_neo4j()

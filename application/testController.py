@@ -1,4 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
+
+import application.Repository.GeneralRepository as GeneralRepository
 
 app = Flask(__name__)
 
@@ -9,6 +11,21 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template("main.html", title='Vietnamese Text Mining')
+
+
+@app.route('/category')
+def get_category():
+    result = {'result': False, 'data': []}
+
+    # load category_nodes from neo4j
+    category_nodes = GeneralRepository.category_nodes
+    for category in category_nodes.keys():
+        result['data'].append(category)
+
+    # if true
+    if len(result['data']) != 0:
+        result['result'] = True
+    return jsonify(result)
 
 
 @app.route('/tuna', methods=['GET', 'POST'])
