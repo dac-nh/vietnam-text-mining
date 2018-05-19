@@ -1,6 +1,10 @@
 from neo4jrestclient import client
 
-db = client.GraphDatabase("http://localhost:7474", username="neo4j", password="123456")  # neo4j
+try:
+    db = client.GraphDatabase("http://localhost:7474", username="neo4j", password="123456")  # neo4j
+except Exception as e:
+    print('[General Repository] Failed in loading Neo4j with error: {0}'.format(e.args[0]))
+    exit()
 
 
 def get_keyword_by_name(keyword_name, current_category_node=None, current_date=None):
