@@ -211,7 +211,7 @@ def generate_word_2_vec():
     # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     # Get list category in database
-    category_nodes = GeneralRepository.get_category_in_neo4j()  # list category nodes
+    category_nodes = GeneralRepository.category_nodes  # list category nodes
 
     # read file
     root_folder = glob.glob("preprocessing_data")

@@ -52,10 +52,10 @@ def run():
     current_category = ""
 
     # writing last processed date to file
-    result_file = open("Library/result/related_keyword.txt", "w+", encoding='utf-8')
+    # result_file = open("Library/result/related_keyword.txt", "w+", encoding='utf-8')
 
     # Get list category in database
-    category_nodes = GeneralRepository.get_category_in_neo4j()  # list category nodes
+    category_nodes = GeneralRepository.category_nodes  # list category nodes
 
     # Word model
     model = Word2Vec()
@@ -73,7 +73,7 @@ def run():
             model = Word2Vec.load(category_nodes[current_category]['model'])
 
         # Get keyword from Neo4j
-        current_keyword_node = GeneralRepository.get_keyword_by_name(current_keyword, category_nodes[current_category],
+        current_keyword_node = GeneralRepository.create_keyword_node(current_keyword, category_nodes[current_category],
                                                                      current_date)
         # word2vec processing
         try:

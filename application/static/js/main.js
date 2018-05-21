@@ -17,7 +17,7 @@ var paperTable = $('#paperTable').DataTable({
         columnDefs: [
             {
                 "targets": [0],
-                "width": 850
+                "width": 500
             }, {
                 "targets": [1],
                 "visible": false
@@ -31,14 +31,75 @@ var datetimePicker = $('#dateTimePicker').datetimepicker({
         minDate: new Date(2018, 2, 21),
         maxDate: new Date()
     });;
+// Waiting Dialog
+var waitingDialog = waitingDialog || (function ($) {
+        'use strict';
 
+        // Creating modal dialog's DOM
+        var $dialog = $(
+            '<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">' +
+            '<div class="modal-dialog modal-m">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header"><h3 style="margin:0;"></h3></div>' +
+            '<div class="modal-body">' +
+            '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>' +
+            '</div>' +
+            '</div></div></div>');
 
+        return {
+            /**
+             * Opens our dialog
+             * @param message Custom message
+             * @param options Custom options:
+             *                  options.dialogSize - bootstrap postfix for dialog size, e.g. "sm", "m";
+             *                  options.progressType - bootstrap postfix for progress bar type, e.g. "success", "warning".
+             */
+            show: function (message, options) {
+                // Assigning defaults
+                if (typeof options === 'undefined') {
+                    options = {};
+                }
+                if (typeof message === 'undefined') {
+                    message = 'Loading';
+                }
+                var settings = $.extend({
+                    dialogSize: 'm',
+                    progressType: '',
+                    onHide: null // This callback runs after the dialog was hidden
+                }, options);
+
+                // Configuring dialog
+                $dialog.find('.modal-dialog').attr('class', 'modal-dialog').addClass('modal-' + settings.dialogSize);
+                $dialog.find('.progress-bar').attr('class', 'progress-bar');
+                if (settings.progressType) {
+                    $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+                }
+                $dialog.find('h3').text(message);
+                // Adding callbacks
+                if (typeof settings.onHide === 'function') {
+                    $dialog.off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
+                        settings.onHide.call($dialog);
+                    });
+                }
+                // Opening dialog
+                $dialog.modal();
+            },
+            /**
+             * Closes dialog
+             */
+            hide: function () {
+                $dialog.modal('hide');
+            }
+        };
+    })(jQuery);
 /**
 * FUNCTION
 **/
 
 // load paper list
 function loadPapers(){
+   // show waiting dialog
+    waitingDialog.show('Đang tải danh sách bài báo');
     var category = categoryTable.row('.selected').data()[0];
     var date = $('#inputDataTimePicker')[0].value;
 
@@ -69,6 +130,7 @@ function loadPapers(){
                         '</button>'
                     ]).draw(false);
                 }
+                waitingDialog.hide();
             } else{
             }
         }
@@ -117,6 +179,23 @@ function loadPaper(row_data){
     });
 }
 
+// Keyword extracting
+function loadKeywords(row_data){
+     // Todo: change path to id and method GET
+    var paper_name = row_data[0];
+    var path = row_data[1]; // get path of paper
+
+    var data = {
+        path: path
+    };
+    $.post(window.location.origin + "/load-keywords", data, function (bean, status) {
+        if (bean.result === true){
+            data = bean.data;
+        } else{
+        }
+    });
+}
+
 // paperTable onclick event
 paperTable.on('click', 'button', function () {
     var row_data = paperTable.row($(this).parents('tr')).data();
@@ -126,6 +205,7 @@ paperTable.on('click', 'button', function () {
             loadPaper(row_data);
             break;
         case 'loadKeywordsBtn':
+            loadKeywords(row_data);
             break;
     }
 });
