@@ -28,6 +28,26 @@ def get_category():
     return jsonify(result)
 
 
+# Todo: change to method GET later
+@app.route('/load-paper', methods=['POST'])
+def get_paper():
+    result = {'result': False, 'data': []}
+    paper_path = request.form['path']
+    # read file
+    content = ''
+    paper_file = open('E:\Developing\PycharmProjects/vn-topic-clustering/' + paper_path, "r", encoding='UTF-8')
+    if paper_file.mode == 'r':
+        lines = paper_file.readlines()
+        for line in lines:
+            content += line
+        result['data'] = content
+
+    # if true
+    if len(result['data']) != 0:
+        result['result'] = True
+    return jsonify(result)
+
+
 @app.route('/tuna', methods=['GET', 'POST'])
 def tuna():
     if request.method == 'GET':
@@ -50,14 +70,15 @@ def show_post(post_id):
 # POST METHOD
 ##
 @app.route('/get-papers-cat-dat', methods=['POST'])
-def get_paper_by_category_and_date():
+def get_papers_by_category_and_date():
     result = {'result': False, 'data': []}
 
     category = request.form['category']
     date = request.form['date']
 
     data = []
-    papers = GeneralRepository.get_paper_by_category_and_date(category, date)
+    papers = GeneralRepository.get_papers_by_category_and_date(category, date)
+    # Todo: change path to id
     # format: [[title, path],...]
     for paper in papers:
         data.append([paper[0]['title'], paper[0]['path']])

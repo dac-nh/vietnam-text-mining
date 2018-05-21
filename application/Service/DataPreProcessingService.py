@@ -80,7 +80,7 @@ def generate_word2vec_model(category, from_date, to_date='0'):
     path = "Library/Model/" + category + "/word2vec_model"  # model path
     try:
         # Query data from Neo4j
-        results = GeneralRepository.get_paper_by_category_and_date(category, from_date, to_date)
+        results = GeneralRepository.get_papers_by_category_and_date(category, from_date, to_date)
 
         train_data = []
         for element in results:
@@ -177,7 +177,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
                         paper_sentences_in_array)  # Json to string use json.loads(paper_sentences)
 
                     # Save to database
-                    result_create_paper_node = GeneralRepository.create_paper_node(paper_title, paper,
+                    result_create_paper_node = GeneralRepository.create_paper_node(paper_title, os.path.realpath(paper),
                                                                                    paper_sentences,
                                                                                    category_nodes,
                                                                                    current_category,

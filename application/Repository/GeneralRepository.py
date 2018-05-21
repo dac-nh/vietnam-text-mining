@@ -112,7 +112,7 @@ def get_category_in_neo4j():
     return result
 
 
-def get_paper_by_category_and_date(category, from_date='0', to_date='0'):
+def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
     """
     GET paper by category and date
     :param category:
@@ -134,7 +134,7 @@ def get_paper_by_category_and_date(category, from_date='0', to_date='0'):
     try:
         return db.query(query, returns=(client.Node, str, client.Node))
     except Exception as e:
-        print('get_paper_by_category_and_date] Failed in retrieving papers from neo4j: {0}'.format(e.args[0]))
+        print('get_papers_by_category_and_date] Failed in retrieving papers from neo4j: {0}'.format(e.args[0]))
         return False
 
 
