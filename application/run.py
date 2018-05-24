@@ -90,4 +90,4 @@ def get_papers_by_category_and_date():
 
 # 2018-05-10: Dac: Only run your app when this file is main file (code run directly - not an imported file)
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
