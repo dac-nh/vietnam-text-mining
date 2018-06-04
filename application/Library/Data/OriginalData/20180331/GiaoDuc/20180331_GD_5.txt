@@ -1,0 +1,3 @@
+Cách nhận biết và phòng tránh những phần mềm độc hại - VnExpress
+Để nhận biết xem máy tính đã nhiễm phần mềm độc hại chưa, bạn cần hiểu và phân biệt được thế nào là virus, malware, rootkit, worm. - VnExpress
+Ổ cứng hết dung lượng trống. Bạn cần kiểm tra xem không gian lưu trữ vật lý của ổ cứng gần đây có tăng lên không hoặc có file nào đã biến mất, bị đổi tên không. Đây là một dấu hiệu hoạt động khác của phần mềm độc hại. Rất nhiều phần mềm độc hại sử dụng những phương pháp khác nhau để "lấp đầy" ổ cứng của bạn và gây ra sự cố trên máy tính nhằm mục đích phá hoại.

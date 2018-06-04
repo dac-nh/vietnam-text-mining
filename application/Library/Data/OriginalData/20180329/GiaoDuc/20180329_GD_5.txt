@@ -1,0 +1,3 @@
+Câu đố tìm đường đi ngắn nhất của con kiến - VnExpress
+Một con kiến muốn bò từ đỉnh A đến C' là đỉnh xuyên tâm của hộp hình chữ nhật, nhưng chỉ có thể bò theo các bề mặt của hộp. - VnExpress
+Có một hộp hình chữ nhật ABCD.A'B'C'D' có kích thước 30cm x 50 cm x 60 cm. Một con kiến muốn đi từ đỉnh A đến đỉnh C' là đỉnh xuyên tâm đối của A. Theo đường chim bay thì khoảng cách này sẽ là vào khoảng 84cm. Nhưng kiến thì không phải là chim và nó chỉ có thể bò theo các bề mặt của cái hộp. Hỏi con kiến phải bò thế nào để đến C' nhanh nhất và đoạn đường nó di chuyển theo cách đó sẽ có độ dài bằng bao nhiêu? Biết rằng, vận tốc của con kiến trên tất cả các mặt đều bằng nhau. TS Trần Nam Dũng Đại học Khoa học Tự nhiên (Đại học Quốc gia TP HCM)

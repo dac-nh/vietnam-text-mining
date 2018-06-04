@@ -1,0 +1,84 @@
+#avatarImg {
+    border-style: solid;
+    border-width: 5px;
+    border-color: lightgrey;
+    margin-bottom: 12px;
+}
+
+div.marginLeftRight {
+    padding-right: 77px;
+}
+
+#leftDiv {
+    padding-right: 40px;
+    padding-left: 77px;
+    background-color: rgb(246, 246, 246);
+}
+
+div.content {
+    font-size: 20px;
+
+}
+
+div.content > p {
+    text-align: justify;
+}
+
+div.content > li {
+    margin-top: 15px;
+}
+
+td.titleTd {
+    font-weight: 900;
+}
+
+h3 > b {
+    color: rgb(31, 87, 104);
+    border-bottom: 1px solid black;
+}
+
+h3 > span {
+    border-radius: 50%;
+    padding: 8px;
+    border: solid transparent;
+    background-color: rgb(31, 87, 104);
+    color: white;
+    margin-right: 20px;
+}
+
+ul.list-with-vertical-line {
+    list-style: none;
+}
+
+ul.list-with-vertical-line > li {
+    position: relative;
+}
+
+ul.list-with-vertical-line > li:before {
+    content: '\25CF';
+    margin-right: 10px;
+    font-size: 30px;
+}
+
+ul.list-with-vertical-line > li:after {
+    position: absolute;
+    left: 0;
+    top: 10%;
+    content: '';
+    border-left: 1px solid black;
+    margin-left: 8px;
+    height: 100%;
+}
+
+/*ul.list-with-vertical-line > li:first-of-type:after {*/
+    /*top: 50%;*/
+/*}*/
+
+/*ul.list-with-vertical-line > li:last-of-type:after {*/
+    /*top: 50%;*/
+/*}*/
+
+li > span {
+    font-size: 20px;
+    vertical-align: center;
+}

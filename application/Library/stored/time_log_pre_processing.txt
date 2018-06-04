@@ -1,2 +1,0 @@
-Date                D.Num       P.Num           data_analyzing_time             Word2vec            keyword     similar-word    similar-word processing
-2018-04-24			9			1458			84714.95899999999 ms			7400.153 ms			999			18160			5519.1410000000005 ms
