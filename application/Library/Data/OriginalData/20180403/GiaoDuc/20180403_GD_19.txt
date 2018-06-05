@@ -1,3 +1,0 @@
-Những lỗi sai thường gặp khi giải phương trình bậc 2 - VnExpress
-Thiếu điều kiện cho ẩn, không kết luận, chuyển vế không đổi dấu… là những lỗi phổ biến khi làm bài. - VnExpress
-Giải phương trình bậc 2 là câu hỏi thường xuyên xuất hiện trong các đề thi nhưng nhiều em lại mất điểm vì những nhầm lẫn không đáng có. Dưới đây là bảng tổng hợp lỗi sai khi giải phương trình bậc 2 mà giáo viên tại Hệ thống Giáo dục Hocmai.vn tổng hợp. Phương trình chứa ẩn ở mẫu:

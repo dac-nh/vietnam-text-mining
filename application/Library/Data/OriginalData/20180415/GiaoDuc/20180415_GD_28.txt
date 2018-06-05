@@ -1,3 +1,0 @@
-Đáp án câu đố xác suất trên tập hợp vô hạn - VnExpress
-Khá nhiều bạn đã đưa ra đáp án đúng là xác suất số của Bình lớn hơn số của An và bằng 3/4. - VnExpress
-Đề bài: An chọn ngẫu nhiên một số thực được phân bố đều trong đoạn [0; 2018]. Một cách độc lập, Bình chọn ngẫu nhiên một số thực được phân bố đều trong đoạn [0; 4036]. Hỏi xác suất mà số của Bình lớn hơn số của An bằng bao nhiêu? Đáp án: TS Trần Nam Dũng Đại học Khoa học Tự nhiên (Đại học Quốc gia TP HCM)

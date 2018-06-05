@@ -16,12 +16,10 @@ def index():
 @app.route('/category')
 def get_category():
     result = {'result': False, 'data': []}
-
     # load category_nodes from neo4j
     category_nodes = GeneralRepository.category_nodes
     for category in category_nodes.keys():
         result['data'].append(category)
-
     # if true
     if len(result['data']) != 0:
         result['result'] = True
@@ -35,13 +33,12 @@ def get_paper():
     paper_path = request.form['path']
     # read file
     content = ''
-    paper_file = open('E:\Developing\PycharmProjects/vn-topic-clustering/' + paper_path, "r", encoding='UTF-8')
+    paper_file = open(paper_path.replace('..\\', ''), "r", encoding='UTF-8')
     if paper_file.mode == 'r':
         lines = paper_file.readlines()
         for line in lines:
             content += line
         result['data'] = content
-
     # if true
     if len(result['data']) != 0:
         result['result'] = True
@@ -72,17 +69,14 @@ def show_post(post_id):
 @app.route('/get-papers-cat-dat', methods=['POST'])
 def get_papers_by_category_and_date():
     result = {'result': False, 'data': []}
-
     category = request.form['category']
     date = request.form['date']
-
     data = []
     papers = GeneralRepository.get_papers_by_category_and_date(category, date)
     # Todo: change path to id
     # format: [[title, path],...]
     for paper in papers:
         data.append([paper[0]['title'], paper[0]['path']])
-
     result['result'] = True
     result['data'] = data
     return jsonify(result)
@@ -90,4 +84,4 @@ def get_papers_by_category_and_date():
 
 # 2018-05-10: Dac: Only run your app when this file is main file (code run directly - not an imported file)
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)

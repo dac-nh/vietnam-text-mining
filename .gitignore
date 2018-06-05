@@ -101,5 +101,7 @@ ENV/
 .mypy_cache/
 .idea/
 
-#neo4j
+# Library data + database + model
 application/Library/Database/
+application/Library/Data/
+application/Library/Model/

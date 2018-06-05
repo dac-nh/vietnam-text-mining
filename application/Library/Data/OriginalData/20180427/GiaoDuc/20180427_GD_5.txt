@@ -1,3 +1,0 @@
-Cách đơn giản giải các bài toán liên quan tới đồ thị - VnExpress
-Cách làm chung cho những dạng bài toán này đầu tiên là xét chiều biến thiên của đồ thị hàm số, sau đó xét điểm X = 0... - VnExpress
-Các bài toán liên quan đến đồ thị hàm y = f'(x):  Thế Đan

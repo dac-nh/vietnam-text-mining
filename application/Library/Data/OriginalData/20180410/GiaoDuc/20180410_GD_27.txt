@@ -1,3 +1,0 @@
-Đáp án bài toán về những trái dừa của ba chàng thủy thủ - VnExpress
-Câu hỏi đống dừa ban đầu của ba chàng thủy thủ có ít nhất là bao nhiêu trái được nhiều bạn đọc đưa ra lời giải đúng. - VnExpress
-Đề bài: Sau khi hái xong một đống trái dừa, ba thủy thủ thỏa thuận sẽ chia đều số dừa sau khi ngủ dậy. Song, đến nửa đêm, một thủy thủ thức dậy, chia số dừa thành ba đống bằng nhau. Thấy còn dư một trái, anh ta ném trái dừa này đi, rồi giữ phần của mình, trộn lẫn phần còn lại, rồi đi ngủ. Người thứ hai và người thứ ba cũng làm giống y như vậy. Sáng ngày, đống dừa còn lại được chia thành ba phần bằng nhau và còn dư một trái. Hỏi đống dừa ban đầu có ít nhất là bao nhiêu trái? Tôi xin đưa ra hai cách giải sau: TS Trần Nam Dũng Đại học Khoa học Tự nhiên (Đại học Quốc gia TP HCM)

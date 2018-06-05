@@ -16,9 +16,7 @@ def cosine_similarity(vector1, vector2):
 
 def generate_paper_keyword(num):
     print('Generating paper keywords')
-
     folder_dates_path = 'E:\Developing\PycharmProjects/vn-topic-clustering\Data20180321-20180421\PreprocessingData'
-
     # csv_writer = csv.writer(
     #     open('E:/Developing/PycharmProjects/vn-topic-clustering/trial/preprocessing_data/papers_keywords.csv', 'w',
     #          encoding='UTF-8'))
@@ -47,12 +45,10 @@ def generate_paper_keyword(num):
                                             tokenizer=lambda doc: doc.lower().split(" "))
             sklearn_representation = sklearn_tfidf.fit_transform(all_documents)
             skl_tfidf_comparisons = []
-
             for count_0, doc_0 in enumerate(sklearn_representation.toarray()):
                 for count_1, doc_1 in enumerate(sklearn_representation.toarray()):
                     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
             print('')
-
             # for paper in tfidf_results:
             #     current_paper = paper['paper_id']
             #
