@@ -100,3 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
+
+#neo4j
+application/Library/Database/
