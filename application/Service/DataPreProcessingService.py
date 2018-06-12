@@ -159,7 +159,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
                         print('[data_analyzing] Original Paper is not found: {0}'.format(original_paper))
                         continue
                     f = open(original_paper, "r", encoding='UTF-8')
-                    paper_title = f.readline().replace('\n', '').replace('\'', '\"')
+                    paper_name = f.readline().replace('\n', '').replace('\'', '\"')
                     f.close()
                     # Store all sentences in train_data
                     paper_sentences_in_array = []
@@ -168,7 +168,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
                     # Json to string use json.loads(paper_sentences)
                     paper_sentences = json.dumps(paper_sentences_in_array)
                     # Save to database
-                    result_create_paper_node = GeneralRepository.create_paper_node(paper_title, original_paper,
+                    result_create_paper_node = GeneralRepository.create_paper_node(paper_name, original_paper,
                                                                                    processed_paper, paper_sentences,
                                                                                    category_nodes, current_category,
                                                                                    current_date_node)

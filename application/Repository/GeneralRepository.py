@@ -110,7 +110,7 @@ def get_keywords_by_category_and_date(category, date):
 
 
 # Create paper node
-def create_paper_node(paper_title, original_paper_path, processed_paper_path, paper_sentences, category_nodes,
+def create_paper_node(paper_name, original_paper_path, processed_paper_path, paper_sentences, category_nodes,
                       current_category, current_date_node):
     """
     CREATE paper in Neo4j
@@ -130,11 +130,11 @@ def create_paper_node(paper_title, original_paper_path, processed_paper_path, pa
         # Todo: handle duplicate paper
         # Check if paper is existed
         query = "MATCH (pap:Paper) WHERE pap.title='{0}' " \
-                "RETURN pap".format(paper_title)
+                "RETURN pap".format(paper_name)
         current_paper_node = db.query(query, returns=(client.Node, str, client.Node))
         if not current_paper_node.elements:
             # Save each paper to database
-            current_paper_node = db.node.create(title=paper_title, path=original_paper_path,
+            current_paper_node = db.node.create(name=paper_name, path=original_paper_path,
                                                 sentence=paper_sentences, processed_paper_path=processed_paper_path)
             paper_nodes.add(current_paper_node)  # update label for paper
             # create relationship from category to paper
@@ -158,7 +158,7 @@ def create_paper_node(paper_title, original_paper_path, processed_paper_path, pa
         # result['data'] = current_paper_node
         # result['code'] = True
     except Exception as e:
-        print('[create_paper_node] Failed storing at paper: {0} with errors: {1}'.format(paper_title, e.args[0]))
+        print('[create_paper_node] Failed storing at paper: {0} with errors: {1}'.format(paper_name, e.args[0]))
     return result
 
 
