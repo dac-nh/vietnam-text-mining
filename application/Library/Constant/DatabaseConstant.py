@@ -7,6 +7,10 @@ def DATE_OF_DATE_NODE():
     return 'date'
 
 
+def PROCESSED_DATE_PATH():
+    return 'processed_date_path'
+
+
 # CATEGORY NODE
 def CATEGORY_NODE_LABEL():
     return 'Category'

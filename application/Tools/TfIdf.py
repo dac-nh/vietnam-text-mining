@@ -152,27 +152,13 @@ def analyze(documents, resultsPerDocument=-1, preferNouns=False, ranking=True, f
         # 2018-05-01: Dac: config result = {paper_id:, keyword:}
         result = {'paper_id': os.path.basename(doc), 'keywords': []}
 
-        # 2018-05-01: Dac: fix code and comment out old code
-        # max_freq = 0
-        # for (term, freq) in localWordFreqs[doc].items():
-        #     if freq > max_freq:
-        #         max_freq = freq
+        # 2018-05-01: Dac: fix code
         for (term, freq) in localWordFreqs[doc].items():
-            # 2018-05-03: Dac: tf = frequency / max freq
-            # tf = float(freq) / float(max_freq)
-            # 2018-05-03: Dac: tf = frequency / total number of terms in a document
+            # 2018-05-03: Dac: fix all algorithm
             tf = float(freq) / float(len(localWordFreqs[doc]))
-            # idf = total
             idf = math.log(float(len(documents)) / float(1 + globalWordFreq[term]))
             tfidf = tf * idf
             result['keywords'].append([term, str(tfidf)])
-        # iterate over terms in f, calculate their tf-idf, put in new list
-        # for (term, freq) in localWordFreqs[doc].items():
-        #     nounModifier = 1 + int(preferNouns) * int(isNoun(term)) * 0.3
-        #     tf = bool(float(freq)) * (1 + math.log(float(freq)))
-        #     idf = math.log(float(1 + len(documents)) / float(1 + globalWordFreq[term]))
-        #     tfidf = float(tf) * float(idf) * nounModifier
-        #     result['keywords'].append([term, str(tfidf)])
 
         # sort result on tfidf and write them in descending order
         result['keywords'] = sorted(result['keywords'], key=lambda x: (x[1], x[0]), reverse=True)

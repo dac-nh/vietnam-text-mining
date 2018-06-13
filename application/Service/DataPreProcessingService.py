@@ -131,7 +131,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
             continue
         print('Processing papers of date ' + current_date)
         # save current date into neo4j
-        current_date_node = GeneralRepository.create_date_node(current_date)
+        current_date_node = GeneralRepository.create_date_node(current_date, date_of_paper_path)
         if current_date_node:
             current_date_node = current_date_node['data']
         # Loop all category in date
@@ -159,7 +159,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
                         print('[data_analyzing] Original Paper is not found: {0}'.format(original_paper))
                         continue
                     f = open(original_paper, "r", encoding='UTF-8')
-                    paper_name = f.readline().replace('\n', '').replace('\'', '\"')
+                    paper_name = f.readline().replace('\n', '').replace('\'', '\"')  # Get real name of paper
                     f.close()
                     # Store all sentences in train_data
                     paper_sentences_in_array = []
@@ -167,7 +167,7 @@ def data_analyzing(path, category_nodes, last_processed_date):
                         paper_sentences_in_array.append(sentence)
                     # Json to string use json.loads(paper_sentences)
                     paper_sentences = json.dumps(paper_sentences_in_array)
-                    # Save to database
+                    # Save paper to database
                     result_create_paper_node = GeneralRepository.create_paper_node(paper_name, original_paper,
                                                                                    processed_paper, paper_sentences,
                                                                                    category_nodes, current_category,
@@ -236,6 +236,7 @@ def generate_word_2_vec():
 # 2018-04-24: Dac: writing to time_log_pre_processing
 pre_processing_time_log = generate_word_2_vec()['pre_processing_time_log']
 # load keyword from file and integrate with category and date
+# ToDo: generating keyword; then, save them into database and delete attribute sentence
 # pre_processing_time_log += WordProcessing.run()['pre_processing_time_log']
 
 f = open(GeneralConstant.TIME_PROCESSING_LOG_PATH(), "a+")

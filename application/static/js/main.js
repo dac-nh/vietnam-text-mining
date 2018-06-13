@@ -112,7 +112,7 @@ function loadPapers() {
 
     $.post(window.location.origin + "/get-papers-cat-dat", data,
         function (bean, status) {
-            if (status === 'success' && bean.result === true) {
+            if (status === 'success' && bean.code === true) {
                 data = bean.data;
                 paperTable.clear();
                 // Todo: change path to id
@@ -150,7 +150,7 @@ function loadPaper(row_data) {
         path: path
     };
     $.post(window.location.origin + "/load-paper", data, function (bean, status) {
-        if (bean.result === true) {
+        if (bean.code === true) {
             BootstrapDialog.show({
                 type: BootstrapDialog.TYPE_INFO,
                 size: BootstrapDialog.SIZE_NORMAL,
@@ -192,7 +192,7 @@ function loadKeywords(row_data) {
         path: path
     };
     $.post(window.location.origin + "/load-keywords", data, function (bean, status) {
-        if (bean.result === true) {
+        if (bean.code === true) {
             data = bean.data;
         } else {
         }
@@ -238,7 +238,7 @@ $(function () {
     });
 
     $.get(window.location.origin + "/category", function (bean, status) {
-        if (status === "success" && bean.result === true) {
+        if (status === "success" && bean.code === true) {
             // Load category into category table
             data = bean.data;
             for (var current = 0; current < data.length; current++) {

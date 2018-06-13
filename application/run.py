@@ -15,21 +15,21 @@ def index():
 
 @app.route('/category')
 def get_category():
-    result = {'result': False, 'data': []}
+    result = {'code': False, 'data': []}
     # load category_nodes from neo4j
     category_nodes = GeneralRepository.category_nodes
     for category in category_nodes.keys():
         result['data'].append(category)
     # if true
     if len(result['data']) != 0:
-        result['result'] = True
+        result['code'] = True
     return jsonify(result)
 
 
 # Todo: change to method GET later
 @app.route('/load-paper', methods=['POST'])
 def get_paper():
-    result = {'result': False, 'data': []}
+    result = {'code': False, 'data': []}
     paper_path = request.form['path']
     # read file
     content = ''
@@ -41,7 +41,7 @@ def get_paper():
         result['data'] = content
     # if true
     if len(result['data']) != 0:
-        result['result'] = True
+        result['code'] = True
     return jsonify(result)
 
 
@@ -68,7 +68,7 @@ def show_post(post_id):
 ##
 @app.route('/get-papers-cat-dat', methods=['POST'])
 def get_papers_by_category_and_date():
-    result = {'result': False, 'data': []}
+    result = {'code': False, 'data': []}
     category = request.form['category']
     date = request.form['date']
     data = []
@@ -77,7 +77,7 @@ def get_papers_by_category_and_date():
     # format: [[title, path],...]
     for paper in papers:
         data.append([paper[0]['title'], paper[0]['path']])
-    result['result'] = True
+    result['code'] = True
     result['data'] = data
     return jsonify(result)
 

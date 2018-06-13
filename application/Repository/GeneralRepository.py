@@ -1,4 +1,5 @@
 from neo4jrestclient import client
+
 import application.Library.Constant.GeneralConstant as GeneralConstant
 
 try:
@@ -114,7 +115,7 @@ def create_paper_node(paper_name, original_paper_path, processed_paper_path, pap
                       current_category, current_date_node):
     """
     CREATE paper in Neo4j
-    :param paper_title:
+    :param paper_name:
     :param original_paper_path:
     :param processed_paper_path:
     :param paper_sentences:
@@ -163,9 +164,10 @@ def create_paper_node(paper_name, original_paper_path, processed_paper_path, pap
 
 
 # Create date node
-def create_date_node(current_date):
+def create_date_node(current_date, processed_date_path):
     """
     CREATE date in Neo4j
+    :param processed_date_path:
     :param current_date:
     """
     result = {}
@@ -177,7 +179,7 @@ def create_date_node(current_date):
                 "RETURN date".format(current_date)
         current_date_node = db.query(query, returns=(client.Node, str, client.Node))
         if not current_date_node.elements:
-            current_date_node = db.node.create(date=current_date)
+            current_date_node = db.node.create(date=current_date, processed_date_path=processed_date_path)
             date_nodes.add(current_date_node)
         else:
             current_date_node = current_date_node.elements[0]
