@@ -52,3 +52,6 @@ def KEYWORD_NODE_LABEL():
 
 def NAME_OF_KEYWORD_NODE():
     return 'name'
+
+# RELATIONSHIPS
+

@@ -1,2 +1,4 @@
-
+Date        Number of Date      Papers          Analyzing duration      Building model duration
 2018-06-05			41			6743			2640594.845 ms			126.42 ms
+2018-06-14			41			4682			1691862.499 ms			31960.501 ms
+2018-06-14			41			0			6.792000000000001 ms			829.759 ms

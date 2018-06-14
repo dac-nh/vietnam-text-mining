@@ -1,19 +1,19 @@
 import glob
-import math
 import os
 
+import application.Repository.GeneralRepository as GeneralRepository
 import application.Tools.TfIdf as tfidf
 
 
-def cosine_similarity(vector1, vector2):
-    dot_product = sum(p * q for p, q in zip(vector1, vector2))
-    magnitude = math.sqrt(sum([val ** 2 for val in vector1])) * math.sqrt(sum([val ** 2 for val in vector2]))
-    if not magnitude:
-        return 0
-    return dot_product / magnitude
+# def cosine_similarity(vector1, vector2):
+#     dot_product = sum(p * q for p, q in zip(vector1, vector2))
+#     magnitude = math.sqrt(sum([val ** 2 for val in vector1])) * math.sqrt(sum([val ** 2 for val in vector2]))
+#     if not magnitude:
+#         return 0
+#     return dot_product / magnitude
 
 
-def generate_paper_keyword(path, max_ngram_number):
+def generate_paper_keyword(path, max_ngram_number=10):
     """
     generate_paper_keyword
     :param path:
@@ -40,6 +40,9 @@ def generate_paper_keyword(path, max_ngram_number):
             for paper in tfidf_results:
                 current_paper = paper['paper_id']
                 for keyword in paper['keywords']:
+                    GeneralRepository.create_keyword_node(keyword, current_paper.replace('.txt', ''),
+                                                          GeneralRepository.category_nodes[current_category],
+                                                          current_date)
                     row = [current_date, current_category, current_paper.replace('.txt', '')] + keyword
                     data.append(row)
 
@@ -63,11 +66,11 @@ def generate_paper_keyword(path, max_ngram_number):
     # Write to CSV
     # csv_writer.writerows(data)
 
-    # 2018-06-13: Dace: TFIDF by myself
-    for row in data:
-        for element in row:
-            # writer.write(element + '\n')
-            print(element)
+    # 2018-06-13: Dace: print TFIDF by myself
+    # for row in data:
+    #     for element in row:
+    #         # writer.write(element + '\n')
+    #         print(element)
     print('Generating completed')
     result = {'code': True, 'data': data}
     return result

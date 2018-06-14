@@ -4,10 +4,9 @@ import application.Repository.GeneralRepository as GeneralRepository
 
 app = Flask(__name__)
 
+""" GET """
 
-##
-# GET METHOD
-##
+
 @app.route('/')
 def index():
     return render_template("main.html", title='Vietnamese Text Mining')
@@ -63,20 +62,20 @@ def show_post(post_id):
     return '<h2>Post Id: {0}</h2>'.format(post_id)
 
 
-##
-# POST METHOD
-##
+""" POST """
+
+
 @app.route('/get-papers-cat-dat', methods=['POST'])
 def get_papers_by_category_and_date():
     result = {'code': False, 'data': []}
     category = request.form['category']
     date = request.form['date']
     data = []
-    papers = GeneralRepository.get_papers_by_category_and_date(category, date)
+    papers = GeneralRepository.get_papers_by_category_and_date(category, to_date=date)
     # Todo: change path to id
-    # format: [[title, path],...]
+    # format: [[name, path],...]
     for paper in papers:
-        data.append([paper[0]['title'], paper[0]['path']])
+        data.append([paper[0]['name'], paper[0]['path']])
     result['code'] = True
     result['data'] = data
     return jsonify(result)

@@ -9,7 +9,7 @@ def PROCESSED_DATA_PATH():
     return '..\\Library\\Data\\ProcessedData'
 
 
-def LAST_PROCESSING_DATE_PATH():
+def LAST_ANALYZED_DATE_PATH():
     return '..\\Library\\Output\\last_processing.txt'
 
 
