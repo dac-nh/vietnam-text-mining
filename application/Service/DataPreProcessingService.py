@@ -224,8 +224,10 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
                         original_paper = processed_paper.replace(GeneralConstant.PROCESSED_DATA_PATH(),
                                                                  GeneralConstant.ORIGINAL_DATA_PATH())
                         if not os.path.isfile(original_paper):  # if this paper does not exist in OriginalData
-                            print('[data_analyzing] Original Paper is not found: {0}'.format(original_paper))
+                            print('\t\tOriginal Paper is not found: {0}'.format(
+                                os.path.basename(original_paper).replace('.txt', '')))
                             os.remove(processed_paper)  # delete processed file
+                            print('\t\t Deleted!')
                             continue
                         f = open(original_paper, "r", encoding='UTF-8')
                         paper_name = f.readline().replace('\n', '').replace('\'', '\"')  # Get real name of paper
