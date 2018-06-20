@@ -9,12 +9,20 @@ def PROCESSED_DATA_PATH():
     return '..\\Library\\Data\\ProcessedData'
 
 
-def LAST_ANALYZED_DATE_PATH():
-    return '..\\Library\\Output\\last_processing.txt'
+def TRAINING_MODEL_LOG_PATH():
+    return '..\\Library\\Output\\log_training_model.txt'
 
 
-def TIME_PROCESSING_LOG_PATH():
-    return '..\\Library\\Output\\time_log_pre_processing.txt'
+def LAST_TRAINING_DATE_PATH():
+    return '..\\Library\\Output\\last_training_date.txt'
+
+
+def PROCESSING_LOG_PATH():
+    return '..\\Library\\Output\\log_pre_processing.txt'
+
+
+def LAST_PROCESSED_DATE_PATH():
+    return '..\\Library\\Output\\last_processing_date.txt'
 
 
 def VN_STOP_WORD_PATH():
@@ -33,5 +41,7 @@ def RESULT_FALSE():
 
 
 """ PRE-PROCESSING CONSTANT """
+
+
 def DELETE_PAPER():
     return -101

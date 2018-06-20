@@ -69,8 +69,8 @@ def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
     """
     GET paper by category and date
     :param category:
-    :param from_date:
-    :param to_date:
+    :param from_date: > date
+    :param to_date: = date
     :return:
     """
     # Query data from Neo4j
@@ -82,12 +82,12 @@ def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
     elif from_date != '0':
         query = "MATCH (cat:Category)-[]->(pap:Paper) WHERE cat.name='{0}' " \
                 "WITH collect(pap) as paper MATCH (dat:Date)-[]->(pap:Paper) " \
-                "WHERE dat.date='{1}' AND pap in paper " \
-                "RETURN pap".format(category, to_date)
+                "WHERE dat.date>'{1}' AND pap in paper " \
+                "RETURN pap".format(category, from_date)
     else:
         query = "MATCH (cat:Category)-[]->(pap:Paper) WHERE cat.name='{0}' " \
                 "WITH collect(pap) as paper MATCH (dat:Date)-[]->(pap:Paper) " \
-                "WHERE dat.date>'{1}' AND pap in paper " \
+                "WHERE dat.date='{1}' AND pap in paper " \
                 "RETURN pap".format(category, from_date)
     try:
         return db.query(query, returns=(client.Node, str, client.Node))
@@ -115,6 +115,32 @@ def get_paper_by_path_id(path_id):
     return result
 
 
+# Get keywords of a paper
+def get_keyword_by_paper_id(paper_id):
+    """
+    get_keyword_by_paper_id
+    :param paper_id:
+    :return:
+    """
+    result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
+    try:
+        query = "MATCH (key:Keyword)<-[ptk:PaperToKeyword]-(pap:Paper) WHERE id(pap)={0} RETURN key.name as name, " \
+                "ptk.weight as weight".format(int(paper_id))
+        keyword_node = db.query(query)
+
+        result['code'] = GeneralConstant.RESULT_TRUE()
+        columns = keyword_node.get_response()['columns']
+        data = keyword_node.get_response()['data']
+        keywords = []
+        for item in data:
+            row = {columns[0]: item[0], columns[1]: item[1]}
+            keywords.append(row)
+        result['data'] = keywords
+    except Exception as e:
+        print('[get_keyword_by_paper_id] Failed in retrieving paper from neo4j: {0}'.format(e.args[0]))
+    return result
+
+
 # Create paper node
 def create_paper_node(paper_name, original_paper_path, processed_paper_path, paper_sentences, category_nodes,
                       current_category, current_date_node):
@@ -134,7 +160,7 @@ def create_paper_node(paper_name, original_paper_path, processed_paper_path, pap
     paper_nodes = db.labels.create("Paper")  # paper nodes
     try:
         # Check if paper is existed
-        query = "MATCH (pap:Paper) WHERE pap.title='{0}' " \
+        query = "MATCH (pap:Paper) WHERE pap.name='{0}' " \
                 "RETURN pap".format(paper_name)
         current_paper_node = db.query(query, returns=(client.Node, str, client.Node))
         if not current_paper_node.elements:
@@ -225,6 +251,7 @@ def create_date_node(current_date, processed_date_path):
 def create_keyword_node(keyword, current_paper_path_id, category_nodes, current_category, current_date):
     """
     GET keyword by name
+    :param category_nodes:
     :param current_category:
     :param keyword:
     :param current_paper_path_id:

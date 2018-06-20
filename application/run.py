@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 
+import application.Library.Constant.GeneralConstant as GeneralConstant
 import application.Repository.GeneralRepository as GeneralRepository
 
 app = Flask(__name__)
@@ -30,17 +31,20 @@ def get_category():
 def get_paper():
     result = {'code': False, 'data': []}
     paper_path = request.form['path']
-    # read file
-    content = ''
-    paper_file = open(paper_path.replace('..\\', ''), "r", encoding='UTF-8')
-    if paper_file.mode == 'r':
-        lines = paper_file.readlines()
-        for line in lines:
-            content += line
-        result['data'] = content
-    # if true
-    if len(result['data']) != 0:
-        result['code'] = True
+    try:
+        # read file
+        content = ''
+        paper_file = open(paper_path.replace('..\\', ''), "r", encoding='UTF-8')
+        if paper_file.mode == 'r':
+            lines = paper_file.readlines()
+            for line in lines:
+                content += line
+            result['data'] = content
+        # if true
+        if len(result['data']) != 0:
+            result['code'] = True
+    except Exception as e:
+        print('[get_paper] Failed in getting content of paper: '.format(e.args[0]))
     return jsonify(result)
 
 
@@ -75,10 +79,17 @@ def get_papers_by_category_and_date():
     # Todo: change path to id
     # format: [[name, path],...]
     for paper in papers:
-        data.append([paper[0]['name'], paper[0]['path']])
+        data.append([paper[0].id, paper[0]['name'], paper[0]['path']])
     result['code'] = True
     result['data'] = data
     return jsonify(result)
+
+
+@app.route('/post-keywords-paper', methods=['POST'])
+def post_keywords_by_paper():
+    paper_id = request.form['paperId']
+    keyword_result = GeneralRepository.get_keyword_by_paper_id(paper_id)
+    return jsonify(keyword_result)
 
 
 # 2018-05-10: Dac: Only run your app when this file is main file (code run directly - not an imported file)

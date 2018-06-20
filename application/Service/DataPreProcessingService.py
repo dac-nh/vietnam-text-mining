@@ -65,7 +65,6 @@ def to_ngram(string, n=1):
 
 
 # Generate papers' keywords
-# 2018-06-14: Dac: added
 def generate_paper_keyword(path, last_analyzed_date='0', max_ngram_number=10):
     """
     generate_paper_keyword
@@ -97,34 +96,10 @@ def generate_paper_keyword(path, last_analyzed_date='0', max_ngram_number=10):
                 current_paper = paper['paper_id']
                 for keyword in paper['keywords']:
                     GeneralRepository.create_keyword_node(keyword, current_paper.replace('.txt', ''),
-                                                          GeneralRepository.category_nodes[current_category],
+                                                          GeneralRepository.category_nodes, current_category,
                                                           current_date)
                     row = [current_date, current_category, current_paper.replace('.txt', '')] + keyword
                     data.append(row)
-            # 2018-05-07: Dac scikit learn
-            # all_documents = []
-            # for document in glob.glob(folder_category + '/*'):
-            #     document_data = ''
-            #     for line in open(document, "r", encoding='UTF-8').readlines():
-            #         document_data += line + ' '
-            #     all_documents.append(document_data)
-            #
-            # sklearn_tfidf = TfidfVectorizer(ngram_range=(1, max_ngram_number), norm='l2', min_df=0, use_idf=True,
-            #                                 smooth_idf=False, sublinear_tf=True,
-            #                                 tokenizer=lambda doc: doc.lower().split(" "))
-            # sklearn_representation = sklearn_tfidf.fit_transform(all_documents)
-            # skl_tfidf_comparisons = []
-            # for count_0, doc_0 in enumerate(sklearn_representation.toarray()):
-            #     for count_1, doc_1 in enumerate(sklearn_representation.toarray()):
-            #         skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-    # Write to CSV
-    # csv_writer.writerows(data)
-
-    # 2018-06-13: Dace: print TFIDF by myself
-    # for row in data:
-    #     for element in row:
-    #         # writer.write(element + '\n')
-    #         print(element)
     print('Generating completed')
     result = {'code': True, 'data': data}
     return result
@@ -138,6 +113,7 @@ def generate_word2vec_model(category, from_date, to_date='0'):
     :param from_date: > from date
     :param to_date: <= to_date
     """
+    result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
     print('Generating Word2Vec Model Of Category: {0}'.format(category))
     path = "..\\Library\\Model\\" + category + "\\word2vec_model"  # model path
     try:
@@ -163,11 +139,12 @@ def generate_word2vec_model(category, from_date, to_date='0'):
                 os.makedirs("..\\Library\\Model\\" + category)  # create folder
                 model.save(path)  # save model to file
             print('Generating Word2Vec Model Of Category: {0} Successfully'.format(category))
+            result = {'code': GeneralConstant.RESULT_TRUE(), 'data': [path, len(results)]}
         except Exception as e:
             print("[Model Processing] Failed Word2Vec with error: {0}".format(e.args[0]))
     except Exception as e:
         print("[Model Processing] Retrieving Data from Neo4j failed with error: {0}".format(e.args[0]))
-    return path
+    return result
 
 
 # Data analyzing
@@ -186,6 +163,7 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
         # 2018-04-24: Dac: prepare data to write to time_log
         start_time = datetime.datetime.now()  # Start time for writing log file
         paper_num = 0  # number of papers
+        keyword_num = 0  # number of keywords
         date_num = 0
         # Loop all date
         for date_of_paper_path in glob.glob(path.pop() + '\\*'):  # date of paper
@@ -209,7 +187,6 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
                 # Loop each paper of category in date
                 for processed_paper in glob.glob(category_path + '\\*'):  # each paper processing
                     # 2018-04-24: Dac: update paper_num
-                    paper_num += 1
                     paper_name = os.path.basename(processed_paper)
                     print('\t\tProcessing paper ' + paper_name)
                     try:
@@ -244,6 +221,7 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
                                                                                        category_nodes, current_category,
                                                                                        current_date_node)
                         if result_create_paper_node['code'] == GeneralConstant.RESULT_FALSE():
+                            paper_num += 1
                             print('[data_analyzing] Failed at create_paper_node at paper: {0}'.format(
                                 os.path.basename(original_paper).replace('.txt', '')))
                         # case delete duplicate file
@@ -264,6 +242,7 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
                                               ranking=True, preferNouns=True, files=True)
                 for paper in tfidf_results:
                     current_paper = paper['paper_id']
+                    keyword_num += len(paper['keywords'])
                     for keyword in paper['keywords']:
                         create_keyword_node_result = GeneralRepository.create_keyword_node(keyword,
                                                                                            current_paper.replace('.txt',
@@ -278,10 +257,9 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
                 print('\t\tGenerating keyword successfully!')
 
         end_time = datetime.datetime.now()  # Stop time for writing log file
-        pre_processing_time_log = '{0}\t\t\t{1}\t\t\t{2}\t\t\t{3} ms'.format(
+        pre_processing_time_log = '{0}\t\t\t{1}\t\t\t{2}\t\t\t{3}\t\t\t{4} ms'.format(
             datetime.datetime.now().strftime("%Y-%m-%d"),
-            date_num, paper_num,
-            (end_time - start_time).total_seconds() * 1000)
+            date_num, paper_num, keyword_num, (end_time - start_time).total_seconds() * 1000)
         result = {'code': GeneralConstant.RESULT_TRUE(), 'last_processed_date': current_date,
                   'pre_processing_time_log': pre_processing_time_log}
     except Exception as e:
@@ -290,13 +268,12 @@ def data_analyzing(path, category_nodes, last_processed_date, max_ngram_number=1
     return result
 
 
-# Generate WORD 2 VEC
-def generate_word_2_vec():
+def run_data_pre_processing_exclude_training_model():
     """
     Pre Processing
     :return: code, pre_processing_time_log
     """
-    result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
+    result = {'code': GeneralConstant.RESULT_FALSE(), 'pre_processing_time_log': None}
     # Enable logging
     # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     # Get list category in database
@@ -304,42 +281,94 @@ def generate_word_2_vec():
     # read file
     root_folder = glob.glob(GeneralConstant.PROCESSED_DATA_PATH())
     # last analyzed date default is 0
-    last_analyzed_date = '0'
-    if os.path.isfile(GeneralConstant.LAST_ANALYZED_DATE_PATH()):
-        f = open(GeneralConstant.LAST_ANALYZED_DATE_PATH(), "r+", encoding='UTF-8')
-        last_analyzed_date = f.readlines()[-1]
+    last_processed_date = '0'
+    if os.path.isfile(GeneralConstant.LAST_PROCESSED_DATE_PATH()):
+        f = open(GeneralConstant.LAST_PROCESSED_DATE_PATH(), "r+", encoding='UTF-8')
+        last_processed_date = f.readlines()[-1]
         f.close()
 
     # 2018-06-14: Dac: ANALYZE and STORE to database
-    result_data_analyzing = data_analyzing(root_folder, category_nodes, last_analyzed_date)
+    result_data_analyzing = data_analyzing(root_folder, category_nodes, last_processed_date)
 
     if result_data_analyzing['code'] == GeneralConstant.RESULT_TRUE():
-        # 2018-04-24: Dac: prepare data to write to time_log
-        start_time = datetime.datetime.now()
-        # generate word2vec model
-        for category in category_nodes.keys():
-            category_nodes[category].set('model', generate_word2vec_model(category, last_analyzed_date))
-        end_time = datetime.datetime.now()
-        # writing last processed date to file
-        if last_analyzed_date < result_data_analyzing['last_processed_date']:
-            f = open(GeneralConstant.LAST_ANALYZED_DATE_PATH(), "a")
+        # # 2018-04-24: Dac: prepare data to write to time_log
+        # start_time = datetime.datetime.now()
+        # # generate word2vec model
+        # for category in category_nodes.keys():
+        #     category_nodes[category].set('model', generate_word2vec_model(category, last_processed_date))
+        # end_time = datetime.datetime.now()
+        # # writing last processed date to file
+        if last_processed_date < result_data_analyzing['last_processed_date']:
+            f = open(GeneralConstant.LAST_PROCESSED_DATE_PATH(), "a")
             f.write('\n' + result_data_analyzing['last_processed_date'])
             f.close()
         # 2018-04-24: Dac: update pre_processing_time_log
-        pre_processing_time_log = result_data_analyzing['pre_processing_time_log'] + '\t\t\t{0} ms'.format(
-            (end_time - start_time).total_seconds() * 1000)  # update generate_word2vec time
-        result = {'code': GeneralConstant.RESULT_TRUE(), 'pre_processing_time_log': pre_processing_time_log}
+        pre_processing_time_log = result_data_analyzing['pre_processing_time_log']
+        result = {'code': GeneralConstant.RESULT_TRUE(), 'pre_processing_time_log': pre_processing_time_log,
+                  "last_processed_date": last_processed_date}
+    return result
+
+
+def run_training_model(to_date='0'):
+    """
+    run_training_model
+    :param to_date:
+    """
+    result = {'code': GeneralConstant.RESULT_FALSE(), 'training_model_time_log': '0'}
+    category_nodes = GeneralRepository.category_nodes  # list category nodes
+    # last trained date
+    last_training_date = '0'
+    if os.path.isfile(GeneralConstant.LAST_TRAINING_DATE_PATH()):
+        f = open(GeneralConstant.LAST_TRAINING_DATE_PATH(), "r+", encoding='UTF-8')
+        last_training_date = f.readlines()[-1]
+        f.close()
+    # last processed date
+    last_processed_date = '0'
+    if os.path.isfile(GeneralConstant.LAST_PROCESSED_DATE_PATH()):
+        f = open(GeneralConstant.LAST_PROCESSED_DATE_PATH(), "r+", encoding='UTF-8')
+        last_processed_date = f.readlines()[-1]
+        f.close()
+    # Check to_date whether it lower than last_processed_date
+    if to_date > last_processed_date:
+        to_date = last_processed_date
+    # 2018-04-24: Dac: prepare data to write to time_log
+    start_time, end_time = datetime.datetime.now()
+
+    total_papers = 0
+    # writing last training date to file
+    if last_training_date < to_date:
+        # generate word2vec model
+        for category in category_nodes.keys():
+            training_model_result = generate_word2vec_model(category, last_training_date, to_date=to_date)
+            if training_model_result == GeneralConstant.RESULT_TRUE():
+                total_papers += training_model_result['data'][1]
+                category_nodes[category].set('model', training_model_result['data'][0])
+            else:
+                print('[training_model_result] Failed')
+                return result
+        end_time = datetime.datetime.now()
+        # update last_training_date
+        f = open(GeneralConstant.LAST_TRAINING_DATE_PATH(), "a")
+        f.write('\n' + to_date)
+        f.close()
+    # 2018-04-24: Dac: update training_model_time_log
+    training_model_time_log = '{0}\t\t\t{1}\t\t\t{2} ms'.format(to_date, total_papers,
+                                                                (end_time - start_time).total_seconds() * 1000)
+    result = {'code': GeneralConstant.RESULT_TRUE(), 'training_model_time_log': training_model_time_log}
     return result
 
 
 """ MAIN """
 
 # 2018-04-24: Dac: writing to time_log_pre_processing
-pre_processing_time_log = generate_word_2_vec()['pre_processing_time_log']
-# load keyword from file and integrate with category and date
-# ToDo: generating keyword; then, save them into database and delete attribute sentence
-# pre_processing_time_log += WordProcessing.run()['pre_processing_time_log']
-
-f = open(GeneralConstant.TIME_PROCESSING_LOG_PATH(), "a+")
+result_data_preprocessing = run_data_pre_processing_exclude_training_model()
+pre_processing_time_log = result_data_preprocessing['pre_processing_time_log']
+f = open(GeneralConstant.PROCESSING_LOG_PATH(), "a+")
+f.write('\n' + pre_processing_time_log)
+f.close()
+# 2018-06-20: Dac: writing to training_model_time_log
+training_model_time_log = run_training_model(result_data_preprocessing['last_processed_date'])[
+    'training_model_time_log']
+f = open(GeneralConstant.TRAINING_MODEL_LOG_PATH(), "a+")
 f.write('\n' + pre_processing_time_log)
 f.close()
