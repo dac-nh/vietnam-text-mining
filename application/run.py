@@ -75,7 +75,7 @@ def get_papers_by_category_and_date():
     category = request.form['category']
     date = request.form['date']
     data = []
-    papers = GeneralRepository.get_papers_by_category_and_date(category, to_date=date)
+    papers = GeneralRepository.get_papers_by_category_and_date(category, from_date=date)
     # Todo: change path to id
     # format: [[name, path],...]
     for paper in papers:

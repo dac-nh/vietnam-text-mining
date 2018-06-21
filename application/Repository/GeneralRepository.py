@@ -74,21 +74,17 @@ def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
     :return:
     """
     # Query data from Neo4j
-    if (to_date != '0') & (from_date != '0'):
+    if to_date != '0':
         query = "MATCH (cat:Category)-[]->(pap:Paper) WHERE cat.name='{0}' " \
                 "WITH collect(pap) as paper MATCH (dat:Date)-[]->(pap:Paper) " \
                 "WHERE dat.date>'{1}' AND dat.date<='{2}' AND pap in paper " \
                 "RETURN pap".format(category, from_date, to_date)
-    elif from_date != '0':
-        query = "MATCH (cat:Category)-[]->(pap:Paper) WHERE cat.name='{0}' " \
-                "WITH collect(pap) as paper MATCH (dat:Date)-[]->(pap:Paper) " \
-                "WHERE dat.date>'{1}' AND pap in paper " \
-                "RETURN pap".format(category, from_date)
     else:
         query = "MATCH (cat:Category)-[]->(pap:Paper) WHERE cat.name='{0}' " \
                 "WITH collect(pap) as paper MATCH (dat:Date)-[]->(pap:Paper) " \
                 "WHERE dat.date='{1}' AND pap in paper " \
                 "RETURN pap".format(category, from_date)
+
     try:
         return db.query(query, returns=(client.Node, str, client.Node))
     except Exception as e:

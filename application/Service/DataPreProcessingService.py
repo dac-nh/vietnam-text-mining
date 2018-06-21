@@ -114,7 +114,6 @@ def generate_word2vec_model(category, from_date, to_date='0'):
     :param to_date: <= to_date
     """
     result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
-    print('Generating Word2Vec Model Of Category: {0}'.format(category))
     path = "..\\Library\\Model\\" + category + "\\word2vec_model"  # model path
     try:
         # Query data from Neo4j
@@ -127,18 +126,18 @@ def generate_word2vec_model(category, from_date, to_date='0'):
                 train_data.append(sentence)
         try:
             if os.path.exists(path):
+                print('Updating Word2Vec Model Of Category: {0} Successfully'.format(category))
                 # update model
                 model = Word2Vec.load(path)
                 model.build_vocab(sentences=train_data, update=True)  # update vocabulary
                 model.train(sentences=train_data, total_examples=model.corpus_count, epochs=model.iter)  # train data
-
                 model.save(path)  # save model to file
             else:
+                print('Creating Word2Vec Model Of Category: {0} Successfully'.format(category))
                 # generate new model
                 model = Word2Vec(train_data, size=100, window=10, min_count=3, workers=4, sg=1)
                 os.makedirs("..\\Library\\Model\\" + category)  # create folder
                 model.save(path)  # save model to file
-            print('Generating Word2Vec Model Of Category: {0} Successfully'.format(category))
             result = {'code': GeneralConstant.RESULT_TRUE(), 'data': [path, len(results)]}
         except Exception as e:
             print("[Model Processing] Failed Word2Vec with error: {0}".format(e.args[0]))
@@ -306,6 +305,9 @@ def run_data_pre_processing_exclude_training_model():
         pre_processing_time_log = result_data_analyzing['pre_processing_time_log']
         result = {'code': GeneralConstant.RESULT_TRUE(), 'pre_processing_time_log': pre_processing_time_log,
                   "last_processed_date": last_processed_date}
+        f = open(GeneralConstant.PROCESSING_LOG_PATH(), "a+")
+        f.write('\n' + pre_processing_time_log)
+        f.close()
     return result
 
 
@@ -332,7 +334,8 @@ def run_training_model(to_date='0'):
     if to_date > last_processed_date:
         to_date = last_processed_date
     # 2018-04-24: Dac: prepare data to write to time_log
-    start_time, end_time = datetime.datetime.now()
+    start_time = datetime.datetime.now()
+    end_time = start_time
 
     total_papers = 0
     # writing last training date to file
@@ -340,7 +343,7 @@ def run_training_model(to_date='0'):
         # generate word2vec model
         for category in category_nodes.keys():
             training_model_result = generate_word2vec_model(category, last_training_date, to_date=to_date)
-            if training_model_result == GeneralConstant.RESULT_TRUE():
+            if training_model_result['code'] == GeneralConstant.RESULT_TRUE():
                 total_papers += training_model_result['data'][1]
                 category_nodes[category].set('model', training_model_result['data'][0])
             else:
@@ -355,20 +358,18 @@ def run_training_model(to_date='0'):
     training_model_time_log = '{0}\t\t\t{1}\t\t\t{2} ms'.format(to_date, total_papers,
                                                                 (end_time - start_time).total_seconds() * 1000)
     result = {'code': GeneralConstant.RESULT_TRUE(), 'training_model_time_log': training_model_time_log}
+    f = open(GeneralConstant.TRAINING_MODEL_LOG_PATH(), "a+")
+    f.write('\n' + training_model_time_log)
+    f.close()
     return result
 
 
 """ MAIN """
 
-# 2018-04-24: Dac: writing to time_log_pre_processing
-result_data_preprocessing = run_data_pre_processing_exclude_training_model()
-pre_processing_time_log = result_data_preprocessing['pre_processing_time_log']
-f = open(GeneralConstant.PROCESSING_LOG_PATH(), "a+")
-f.write('\n' + pre_processing_time_log)
-f.close()
-# 2018-06-20: Dac: writing to training_model_time_log
-training_model_time_log = run_training_model(result_data_preprocessing['last_processed_date'])[
-    'training_model_time_log']
-f = open(GeneralConstant.TRAINING_MODEL_LOG_PATH(), "a+")
-f.write('\n' + pre_processing_time_log)
-f.close()
+# 2018-04-24: Dac: preprocessing without training model
+# result_data_preprocessing = run_data_pre_processing_exclude_training_model()
+
+# 2018-06-20: Dac: training model
+# last_processed_date = result_data_preprocessing['last_processed_date']
+# result_training_model = run_training_model(last_processed_date) # automatic run & update model after pre-processing
+result_training_model = run_training_model('20180420')['training_model_time_log']  # manual run && update model
