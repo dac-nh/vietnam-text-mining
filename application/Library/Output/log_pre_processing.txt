@@ -1,4 +1,0 @@
-Date          Number of Date    Papers          Keywords                Building model duration
-2018-06-05			41			6743			2640594.845 ms			126.42 ms
-2018-06-14			41			4682			1691862.499 ms			31960.501 ms
-2018-06-14			41			4682			1892616.056 ms			29163.469 ms

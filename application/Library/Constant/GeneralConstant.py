@@ -25,6 +25,10 @@ def LAST_PROCESSED_DATE_PATH():
     return '..\\Library\\Output\\last_processing_date.txt'
 
 
+def FINDING_SIMILAR_WORD_LOG_PATH():
+    return '..\\Library\\Output\\log_finding_similar_word.txt'
+
+
 def VN_STOP_WORD_PATH():
     return '..\\Library\\Keywords\\stopwords-nlp-vi.txt'
 
@@ -39,6 +43,8 @@ def RESULT_TRUE():
 def RESULT_FALSE():
     return 0
 
+def RESULT_NO_ELEMENT():
+    return -1
 
 """ PRE-PROCESSING CONSTANT """
 

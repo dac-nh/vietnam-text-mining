@@ -362,14 +362,3 @@ def run_training_model(to_date='0'):
     f.write('\n' + training_model_time_log)
     f.close()
     return result
-
-
-""" MAIN """
-
-# 2018-04-24: Dac: preprocessing without training model
-# result_data_preprocessing = run_data_pre_processing_exclude_training_model()
-
-# 2018-06-20: Dac: training model
-# last_processed_date = result_data_preprocessing['last_processed_date']
-# result_training_model = run_training_model(last_processed_date) # automatic run & update model after pre-processing
-result_training_model = run_training_model('20180420')['training_model_time_log']  # manual run && update model

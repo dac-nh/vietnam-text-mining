@@ -105,3 +105,4 @@ ENV/
 application/Library/Database/
 application/Library/Data/
 application/Library/Model/
+application/Library/Output/

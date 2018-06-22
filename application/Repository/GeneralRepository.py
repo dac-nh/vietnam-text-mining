@@ -28,7 +28,6 @@ def get_date(current_date):
     return result
 
 
-# Get category in neo4j
 def get_category():
     """
     GET category from neo4j
@@ -44,9 +43,12 @@ def get_category():
                 # Create category nodes
                 category = db.labels.create("Category")
 
-                cat = [db.nodes.create(name="CongNghe", sign="CN"), db.nodes.create(name="GiaoDuc", sign="GD"),
-                       db.nodes.create(name="KhoaHoc", sign="KH"), db.nodes.create(name="PhapLuat", sign="PL"),
-                       db.nodes.create(name="TheGioi", sign="TG"), db.nodes.create(name="ThoiSu", sign="TS")]
+                cat = [db.nodes.create(name="CongNghe", sign="CN", title="Công Nghệ"),
+                       db.nodes.create(name="GiaoDuc", sign="GD", title="Giáo Dục"),
+                       db.nodes.create(name="KhoaHoc", sign="KH", title="Khoa Học"),
+                       db.nodes.create(name="PhapLuat", sign="PL", title="Pháp Luật"),
+                       db.nodes.create(name="TheGioi", sign="TG", title="Thế Giới"),
+                       db.nodes.create(name="ThoiSu", sign="TS", title="Thời Sự")]
                 for element in cat:
                     category.add(element)
                 print('[Migrating Categories] Storing categories into Neo4j successfully')
@@ -64,7 +66,6 @@ def get_category():
         return False
 
 
-# Get keywords by category and date
 def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
     """
     GET paper by category and date
@@ -92,7 +93,6 @@ def get_papers_by_category_and_date(category, from_date='0', to_date='0'):
         return False
 
 
-# Get paper by path id
 def get_paper_by_path_id(path_id):
     """
     get_paper_by_path_id
@@ -111,7 +111,32 @@ def get_paper_by_path_id(path_id):
     return result
 
 
-# Get keywords of a paper
+def get_date_category_paper_keyword_by_date(from_date, to_date):
+    """
+    get_date_category_paper_keyword_by_date
+    :param from_date:
+    :param to_date:
+    :return:
+    """
+    result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
+    try:
+        query = "MATCH (date:Date)-[:DateToPaper]->(pap:Paper), " \
+                "(cat:Category)-[:CategoryToPaper]->(pap:Paper)-[:PaperToKeyword]->(key:Keyword) " \
+                "WHERE date.date>='{0}' AND date.date<='{1}' " \
+                "RETURN date.date as date, cat.name as category, id(pap) as paper, key.name as keyword" \
+            .format(from_date, to_date)
+        query_result = db.query(query)
+        if len(query_result.elements) == 0:
+            result['code'] = GeneralConstant.RESULT_NO_ELEMENT()
+            return result
+        result['code'] = GeneralConstant.RESULT_TRUE()
+        result['data'] = query_result.elements
+    except Exception as e:
+        print('[get_date_category_paper_keyword_by_date] Failed with error: {0}'.format(e.args[0]))
+
+    return result
+
+
 def get_keyword_by_paper_id(paper_id):
     """
     get_keyword_by_paper_id
@@ -137,7 +162,6 @@ def get_keyword_by_paper_id(paper_id):
     return result
 
 
-# Create paper node
 def create_paper_node(paper_name, original_paper_path, processed_paper_path, paper_sentences, category_nodes,
                       current_category, current_date_node):
     """
@@ -191,7 +215,6 @@ def create_paper_node(paper_name, original_paper_path, processed_paper_path, pap
     return result
 
 
-# Create date node
 def create_date_node(current_date, processed_date_path):
     """
     CREATE date in Neo4j
@@ -218,32 +241,6 @@ def create_date_node(current_date, processed_date_path):
     return result
 
 
-# Create keyword node
-# def create_keyword_node(keyword_name, current_category_node, current_date):
-#     """
-#     GET keyword by name
-#     :param keyword_name:
-#     :return:
-#     """
-#     keyword_node = db.labels.create("Keyword")  # date nodes
-#     result = False
-#     # Store keyword into Neo4j
-#     try:
-#         # Check if keyword is existed
-#         query = "MATCH (key:Keyword) WHERE key.name='{0}' " \
-#                 "RETURN key".format(keyword_name)
-#         current_keyword_node = db.query(query, returns=(client.Node, str, client.Node))
-#         if current_category_node is not None and current_date is not None:
-#             # Create new keywords
-#             if not current_keyword_node.elements:
-#                 current_keyword_node = db.node.create(name=keyword_name)  # create keyword node
-#                 keyword_node.add(current_keyword_node)
-#             # Create relationship
-#             current_category_node.relationships.create('CategoryToKeyword', current_keyword_node, date=current_date)
-#             result = current_keyword_node
-#     except Exception as e:
-#         print('[Generate Keyword] Failed in storing keywords into Neo4j with error: {0}'.format(e.args[0]))
-#     return result
 def create_keyword_node(keyword, current_paper_path_id, category_nodes, current_category, current_date):
     """
     GET keyword by name
