@@ -43,13 +43,14 @@ def find_similar_keywords_by_dates(from_date, to_date):
     dates = []
     if query_results['code'] == GeneralConstant.RESULT_TRUE():
         start_time = 0
-        current_date = 0
+        current_date = '0'
         for row in query_results['data']:
             # append date
             if row[0] not in papers_of_date.keys():
-                # update processing time
-                end_time = datetime.datetime.now()
-                processing_time[current_date] = (end_time - start_time).total_seconds() * 1000
+                if current_date != '0':
+                    # update processing time
+                    end_time = datetime.datetime.now()
+                    processing_time[current_date] = (end_time - start_time).total_seconds() * 1000
                 # update new date
                 current_date = row[0]
                 print('\tProcessing date: {0}'.format(current_date))
@@ -68,6 +69,11 @@ def find_similar_keywords_by_dates(from_date, to_date):
             current_category = row[1]
             current_keyword = row[3]
             similar_keywords = find_similar_keywords(current_category, current_keyword)
+        # 2018-06-22: Dac: Add the last day
+        if current_date != '0':
+            # update processing time
+            end_time = datetime.datetime.now()
+            processing_time[current_date] = (end_time - start_time).total_seconds() * 1000
 
     finding_similar_word_log = ''
     for date in dates:
