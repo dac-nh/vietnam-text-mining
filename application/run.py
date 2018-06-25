@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify
 
 import application.Library.Constant.GeneralConstant as GeneralConstant
 import application.Repository.GeneralRepository as GeneralRepository
+import application.Service.KeywordService as KeywordService
 
 app = Flask(__name__)
 
@@ -13,13 +14,13 @@ def index():
     return render_template("main.html", title='Vietnamese Text Mining')
 
 
-@app.route('/category')
+@app.route('/get-category')
 def get_category():
     result = {'code': False, 'data': []}
     # load category_nodes from neo4j
     category_nodes = GeneralRepository.category_nodes
     for category in category_nodes.keys():
-        result['data'].append(category)
+        result['data'].append({'name': category, 'title': category_nodes[category]['title']})
     # if true
     if len(result['data']) != 0:
         result['code'] = True
@@ -88,8 +89,16 @@ def get_papers_by_category_and_date():
 @app.route('/post-keywords-paper', methods=['POST'])
 def post_keywords_by_paper():
     paper_id = request.form['paperId']
-    keyword_result = GeneralRepository.get_keyword_by_paper_id(paper_id)
+    keyword_result = KeywordService.post_keywords_by_paperid(paper_id)
     return jsonify(keyword_result)
+
+
+@app.route('/post-find-similar-keywords', methods=['POST'])
+def post_find_similar_keywords():
+    keyword = request.form['keyword'].replace(" ", "_")
+    category = request.form['category']
+    result = KeywordService.find_similar_keywords(category, keyword, server=GeneralConstant.ON_SERVER())
+    return jsonify(result)
 
 
 # 2018-05-10: Dac: Only run your app when this file is main file (code run directly - not an imported file)

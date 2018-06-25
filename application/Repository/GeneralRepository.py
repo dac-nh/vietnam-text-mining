@@ -137,7 +137,7 @@ def get_date_category_paper_keyword_by_date(from_date, to_date):
     return result
 
 
-def get_keyword_by_paper_id(paper_id):
+def get_keyword_with_max_weight_by_paper_id(paper_id):
     """
     get_keyword_by_paper_id
     :param paper_id:
@@ -145,18 +145,20 @@ def get_keyword_by_paper_id(paper_id):
     """
     result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
     try:
-        query = "MATCH (key:Keyword)<-[ptk:PaperToKeyword]-(pap:Paper) WHERE id(pap)={0} RETURN key.name as name, " \
-                "ptk.weight as weight".format(int(paper_id))
+        query = "MATCH (key:Keyword)<-[ptk:PaperToKeyword]-(pap:Paper)<-[:CategoryToPaper]-(cat: Category) " \
+                "WHERE id(pap)={0} RETURN key.name as name, ptk.weight as weight, cat.name as cat".format(int(paper_id))
         keyword_node = db.query(query)
 
-        result['code'] = GeneralConstant.RESULT_TRUE()
         columns = keyword_node.get_response()['columns']
         data = keyword_node.get_response()['data']
         keywords = []
+        max_weight = '0'
         for item in data:
-            row = {columns[0]: item[0], columns[1]: item[1]}
+            if item[1] > max_weight:
+                max_weight = item[1]
+            row = {columns[0]: item[0].replace('_', ' '), columns[1]: item[1], columns[2]: item[2]}
             keywords.append(row)
-        result['data'] = keywords
+        result = {'code': GeneralConstant.RESULT_TRUE(), 'data': keywords, 'maxWeight': max_weight}
     except Exception as e:
         print('[get_keyword_by_paper_id] Failed in retrieving paper from neo4j: {0}'.format(e.args[0]))
     return result
@@ -196,18 +198,6 @@ def create_paper_node(paper_name, original_paper_path, processed_paper_path, pap
             result['code'] = GeneralConstant.RESULT_TRUE()
         else:
             result['code'] = GeneralConstant.DELETE_PAPER()
-
-        # # Save each paper to database
-        # current_paper_node = db.node.create(title=paper_title, path=original_paper_path,
-        #                                     sentence=paper_sentences, processed_paper_path=processed_paper_path)
-        # paper_nodes.add(current_paper_node)  # update label for paper
-        #
-        # # create relationship from category to paper
-        # category_nodes[current_category].relationships.create("CategoryToPaper", current_paper_node)
-        # # create relationship from date to paper
-        # current_date_node.relationships.create("DateToPaper", current_paper_node)
-        # result['data'] = current_paper_node
-        # result['code'] = True
     except Exception as e:
         import os
         print('[create_paper_node] Failed storing at paper: {0} with errors: {1}'.format(

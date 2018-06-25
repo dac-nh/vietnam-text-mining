@@ -43,11 +43,24 @@ def RESULT_TRUE():
 def RESULT_FALSE():
     return 0
 
+
 def RESULT_NO_ELEMENT():
     return -1
+
 
 """ PRE-PROCESSING CONSTANT """
 
 
 def DELETE_PAPER():
     return -101
+
+
+""" ON - SERVER"""
+
+
+def ON_SERVER():
+    return 9999
+
+
+def OFF_SERVER():
+    return -9999

@@ -10,9 +10,15 @@ FUNCTION
 """
 
 
-def find_similar_keywords(current_category, current_keyword):
+def post_keywords_by_paperid(paper_id):
+    result = GeneralRepository.get_keyword_with_max_weight_by_paper_id(paper_id)
+    return result
+
+
+def find_similar_keywords(current_category, current_keyword, server=GeneralConstant.OFF_SERVER()):
     """
     find_similar_keywords
+    :param server:
     :param current_category:
     :param current_keyword:
     :return:
@@ -20,12 +26,18 @@ def find_similar_keywords(current_category, current_keyword):
     result = {'code': GeneralConstant.RESULT_FALSE(), 'data': None}
     try:
         category_nodes = GeneralRepository.category_nodes  # list category nodes
-        model = Word2Vec.load(category_nodes[current_category]['model'])
+        # 2018-06-25: Dac: Add property on server
+        if server == GeneralConstant.ON_SERVER():
+            model = Word2Vec.load(category_nodes[current_category]['model'].replace('..\\', ''))  # run on server
+        else:
+            model = Word2Vec.load(category_nodes[current_category]['model'])  # run local
+
         words = model.wv.similar_by_word(current_keyword, topn=10)  # find similar word
         # for word in words:
         #     print("({0}, {1}) ".format(word[0], str(word[1])))
 
         result = {'code': GeneralConstant.RESULT_TRUE(), 'data': words}
+
     except Exception as e:
         print('[find_similar_keywords] Failed with error: {0}'.format(e.args[0]))
     return result

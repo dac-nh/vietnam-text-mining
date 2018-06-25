@@ -17,16 +17,23 @@ var paperTable = $('#paperTable').DataTable({
     columnDefs: [
         {
             "targets": [1],
-            "width": 550
+            "width": 400
         }, {
             "targets": [0, 2],
             "visible": false
         }
     ]
 });
-// var keywordTable = $('#keywordTable').DataTable({
-//     select: true
-// });
+var keywordTable = $('#keywordTable').DataTable({
+    select: true,
+    order: [[1, 'desc']],
+    columnDefs: [
+        {
+            "targets": [2],
+            visible: false
+        }
+    ]
+});
 var datetimePicker = $('#dateTimePicker').datetimepicker({
     format: 'YYYY-MM-DD',
     locale: 'vi',
@@ -41,49 +48,50 @@ AmCharts.ready(function () {
     // KEYWORD CHART
     var chartData = [
         {
-            "name": "1",
-            "weight": 1
+            0: "1",
+            1: 1
         },
         {
-            "name": "2",
-            "weight": 2
+            0: "2",
+            1: 2
         },
         {
-            "name": "3",
-            "weight": 3
+            0: "3",
+            1: 3
         },
         {
-            "name": "4",
-            "weight": 4
+            0: "4",
+            1: 4
         },
         {
-            "name": "5",
-            "weight": 5
+            0: "5",
+            1: 5
         },
         {
-            "name": "6",
-            "weight": 6
+            0: "6",
+            1: 6
         },
         {
-            "name": "7",
-            "weight": 7
+            0: "7",
+            1: 7
         },
         {
-            "name": "8",
-            "weight": 8
+            0: "8",
+            1: 8
         },
         {
-            "name": "9",
-            "weight": 9
+            0: "9",
+            1: 9
         },
         {
-            "name": "10",
-            "weight": 10
+            0: "10",
+            1: 10
         }
     ];
     keywordsChart = new AmCharts.AmSerialChart();
     keywordsChart.dataProvider = chartData;
-    keywordsChart.categoryField = 'name';
+    // keywordsChart.categoryField = 'name';
+    keywordsChart.categoryField = 0;
     keywordsChart.startDuration = 1;
     keywordsChart.rotate = true;
 
@@ -102,7 +110,8 @@ AmCharts.ready(function () {
 // GRAPH
     var graph = new AmCharts.AmGraph();
     graph.title = "Bảng từ khóa";
-    graph.valueField = 'weight';
+    // graph.valueField = 'weight';
+    graph.valueField = 1;
     graph.balloonText = "[[category]]: <b>[[value]]</b>";
     graph.type = "column";
     graph.lineAlpha = 0;
@@ -208,12 +217,12 @@ function loadPapers() {
                         data[current][0],
                         data[current][1],
                         data[current][2],
-                        '<button type="button" class="btn btn-labeled btn-default" id="loadPaperBtn"">' +
+                        '<button type="button" class="btn btn-labeled btn-default form-control" id="loadPaperBtn"">' +
                         '<span class="btn-label">' +
                         '<i class="glyphicon glyphicon-open-file"></i>' +
                         '</span>Mở bài báo' +
                         '</button>' +
-                        '<button type="button" class="btn btn-labeled btn-default" id="loadKeywordsBtn"">' +
+                        '<button type="button" class="btn btn-labeled btn-default form-control" id="loadKeywordsBtn"">' +
                         '<span class="btn-label">' +
                         '<i class="glyphicon glyphicon-tasks"></i>' +
                         '</span>Tải từ khóa' +
@@ -272,7 +281,7 @@ function loadPaper(row_data) {
 
 // Keyword extracting
 function loadKeywords(row_data) {
-    // Todo: change path to id and method GET
+    // Todo: change to method GET
     var paperId = row_data[0];
 
     var data = {
@@ -280,16 +289,49 @@ function loadKeywords(row_data) {
     };
     $.post(window.location.origin + "/post-keywords-paper", data, function (bean, status) {
         if (bean.code === 1) {
-            data = bean.data;
+            var keywords = bean.data;
+            var max_weight = bean.maxWeight;
             // update to keywordchart
+
+            // write to keyword table
+            keywordTable.clear();
+            keywordTable.draw(false);
+            for (var i = 0; i < keywords.length; i++) {
+                keywordTable.row.add([
+                    keywords[i].name,
+                    '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                    + keywords[i].weight * 100 / max_weight + '" '
+                    + 'aria-valuemin="0" aria-valuemax="100" style="width:' + keywords[i].weight * 100 / max_weight + '%"\>'
+                    + Math.round(keywords[i].weight * 1000) / 1000 + '</div></div>',
+                    keywords[i].cat,
+                    '<button type="button" class="btn btn-labeled btn-default form-control" id="loadKeywordsBtn"">' +
+                    '<span class="btn-label">' +
+                    '<i class="glyphicon glyphicon-tasks"></i>' +
+                    '</span>Tải từ khóa' +
+                    '</button>'
+                ]).draw(false);
+            }
+        } else {
+        }
+    });
+}
+
+// find similar keywords
+function postFindSimilarKeywords(row_data) {
+    var keyword = row_data[0];
+    var category = row_data[2];
+    var data = {
+        keyword: keyword,
+        category: category
+    };
+    $.post(window.location.origin + "/post-find-similar-keywords", data, function (bean, status) {
+        if (bean.code === 1) {
+            data = bean.data;
             keywordsChart.dataProvider = data;
             keywordsChart.validateData();
-            // write to keyword table
-            // for (var current = 0; current < data.length; current++) {
-            //     keywordTable.row.add([data[current]['name'].replace('_', ' ', true), data[current]['weight']]);
-            // }
-            // keywordTable.draw(false);
-        } else {
+        }
+        else {
+
         }
     });
 }
@@ -304,6 +346,16 @@ paperTable.on('click', 'button', function () {
             break;
         case 'loadKeywordsBtn':
             loadKeywords(row_data);
+            break;
+    }
+});
+// keywordTable onclick event
+keywordTable.on('click', 'button', function () {
+    var row_data = keywordTable.row($(this).parents('tr')).data();
+    var btn_id = $(this).attr('id');
+    switch (btn_id) {
+        case 'loadKeywordsBtn':
+            postFindSimilarKeywords(row_data);
             break;
     }
 });
@@ -332,14 +384,14 @@ $(function () {
         }
     });
 
-    $.get(window.location.origin + "/category", function (bean, status) {
+    $.get(window.location.origin + "/get-category", function (bean, status) {
         if (status === "success" && bean.code === true) {
             // Load category into category table
-            data = bean.data;
+            var data = bean.data;
             for (var current = 0; current < data.length; current++) {
                 categoryTable.row.add([
-                    data[current],
-                    data[current]
+                    data[current].name,
+                    data[current].title
                 ]).draw(false);
             }
         } else {
